@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <title>До контрнаступа осталось:</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    .slider-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .slider-container input[type="range"] {
+      width: 80vw;
+    }
+
+    .slider-container .slider-icon {
+      margin-left: 2vw;
+      font-size: 4vw;
+      color: #606060;
+    }
+
+    .loading-screen {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url('https://i.imgur.com/LcyiWxs.jpg');
+      background-size: cover;
+      background-position: center;
+      z-index: 9999;
+      animation: fadeOut 5s ease-in;
+    }
+
+    @keyframes fadeOut {
+      0% { opacity: 1; }
+      100% { opacity: 0; }
+    }
+
+    h1 {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 48px;
+      color: red;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+      letter-spacing: 2px;
+      text-align: center;
+    }
+
+    #video-background {
+      position: fixed;
+      right: 0;
+      bottom: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: -1;
+    }
+
+    #timer {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 6vw;
+      color: red;
+      text-align: center;
+      white-space: nowrap;
+      text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.7);
+    }
+  </style>
+</head>
+<body>
+  <div id="loading-screen" class="loading-screen"></div>
+  <div id="timer"></div>
+  <video id="video-background" autoplay muted loop>
+    <source src="https://drive.google.com/u/0/uc?id=1Syi1Au3GQJcn0n3vBBMw3_z7F_lmJhMP&export=download#.mp4">
+  </video>
+
+  <div class="slider-container">
+    <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="0" onchange="changeVolume()">
+    <span class="slider-icon muted" id="volume-icon"></span>
+  </div>
+
+  <h1>До контрнаступа осталось:</h1>
+
+  <script>
+    function hideLoadingScreen() {
+      var loadingScreen = document.getElementById('loading-screen');
+      loadingScreen.style.display = 'none';
+   }
+
+setTimeout(hideLoadingScreen, 5000);
+
+var video = document.getElementById("video-background");
+
+function toggleSound() {
+  if (video.muted) {
+    video.muted = false;
+    toggleSoundButton.textContent = "Выкл";
+  } else {
+    video.muted = true;
+    toggleSoundButton.textContent = "Звук";
+  }
+}
+
+var video = document.getElementById("video-background");
+var volumeSlider = document.getElementById("volume-slider");
+var volumeIcon = document.getElementById("volume-icon");
+
+function changeVolume() {
+  if (volumeSlider.value > 0) {
+    video.muted = false;
+    volumeIcon.textContent = "🔊";
+    volumeIcon.classList.remove("muted");
+  } else {
+    video.muted = true;
+    volumeIcon.textContent = "";
+    volumeIcon.classList.add("muted");
+  }
+  video.volume = volumeSlider.value;
+}
+
+var endDate = new Date("2023-06-01T00:00:00Z");
+
+function updateTimer() {
+  var currentDate = new Date();
+  var timeDifference = endDate - currentDate;
+
+  var days = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+  var hours = Math.floor((timeDifference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  var minutes = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60));
+  var seconds = Math.floor((timeDifference % (1000 * 60)) / 1000);
+
+  var timerElement = document.getElementById("timer");
+  timerElement.innerHTML = days + " дней " + getHourString(hours) + " " + getMinuteString(minutes) + " " + getSecondString(seconds);
+
+  if (timeDifference <= 0) {
+    clearInterval(timerInterval);
+    timerElement.innerHTML = "Контрнаступ!";
+  }
+}
+
+function getHourString(hours) {
+  var lastDigit = hours % 10;
+  var secondToLastDigit = Math.floor((hours % 100) / 10);
+
+  if (secondToLastDigit === 1) {
+    return hours + " часов";
+  } else if (lastDigit === 1) {
+    return hours + " час";
+  } else if (lastDigit >= 2 && lastDigit <= 4) {
+    return hours + " часа";
+  } else {
+    return hours + " часов";
+  }
+}
+
+function getMinuteString(minutes) {
+  var lastDigit = minutes % 10;
+  var secondToLastDigit = Math.floor((minutes % 100) / 10);
+
+  if (secondToLastDigit === 1) {
+    return minutes + " минут";
+  } else if (lastDigit === 1) {
+    return minutes + " минута";
+  } else if (lastDigit >= 2 && lastDigit <= 4) {
+    return minutes + " минуты";
+  } else {
+    return minutes + " минут";
+  }
+}
+
+function getSecondString(seconds) {
+  var lastDigit = seconds % 10;
+  var secondToLastDigit = Math.floor((seconds % 100) / 10);
+
+  if (secondToLastDigit === 1) {
+    return seconds + " секунд";
+  } else if (lastDigit === 1) {
+    return seconds + " секунда";
+  } else if (lastDigit >= 2 && lastDigit <= 4) {
+    return seconds +
+" секунды";
+} else {
+return seconds + " секунд";
+}
+}
+var timerInterval = setInterval(updateTimer, 1000);
+  </script>
+</body>
+</html>
